@@ -1,0 +1,32 @@
+services:
+  app:
+    build: .
+    container_name: express-app
+    ports:
+      - '5000:5000'
+    depends_on:
+      - db
+    env_file:
+      - .env
+    volumes:
+      - .:/app
+    command: npm run dev
+    restart: unless-stopped
+
+  db:
+    image: postgres:15
+    container_name: postgres-db
+    ports:
+      - '5432:5432'
+    env_file:
+      - .env
+    environment:
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_NAME}
+    volumes:
+      - postgres-data:/var/ib/postgresql/data
+    restart: unless-stopped
+
+volumes:
+  postgres-data:

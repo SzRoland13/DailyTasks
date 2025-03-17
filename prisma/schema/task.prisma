@@ -1,0 +1,23 @@
+model Task {
+  id          Int           @id @default(autoincrement())
+  title       String
+  description String
+  priority    PriorityLevel @default(LOW)
+  category    TaskCategory  @default(TODO)
+  author      User          @relation(fields: [authorId], references: [id])
+  authorId    Int
+  createdAt   DateTime      @default(now())
+  dueAt       DateTime?
+}
+
+enum PriorityLevel {
+  LOW
+  MEDIUM
+  HIGH
+}
+
+enum TaskCategory {
+  TODO
+  IN_PROGRESS
+  DONE
+}
