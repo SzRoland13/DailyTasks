@@ -1,10 +1,12 @@
-import express, { Request, Response, Express } from 'express';
+import express, { Request, Response, Express, NextFunction } from 'express';
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import morgan from 'morgan';
 import prisma from './prisma.client';
 import { exit } from 'process';
+import userRoutes from './routes/UserRoutes';
+import { errorHandler } from './middleware/ErrorHandler';
 
 dotenv.config();
 
@@ -16,33 +18,10 @@ app.use(cookieParser());
 app.use(morgan('dev'));
 app.use(express.json());
 
-app.get('/test', (req: Request, res: Response) => {
-  res.status(200).send('Server is up and running!');
-});
+app.use('/api/users', userRoutes);
 
-app.get('/db-test/:id', async (req: Request, res: Response): Promise<void> => {
-  const id = parseInt(req.params.id);
-
-  if (isNaN(id)) {
-    res.status(400).json({ message: 'Invalid ID' });
-    return;
-  }
-
-  try {
-    const user = await prisma.user.findUnique({
-      where: { id: id },
-    });
-
-    if (!user) {
-      res.status(404).json({ message: `User with ${id} id not found!` });
-      return;
-    }
-
-    res.status(200).json(user);
-  } catch (error) {
-    console.error('Database error: ', error);
-    res.status(500).json({ message: 'Internal server error' });
-  }
+app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
+  errorHandler(err, req, res, next);
 });
 
 app.listen(PORT, async () => {
