@@ -1,5 +1,5 @@
 import { User } from '@prisma/client';
-import jwt, { JsonWebTokenError } from 'jsonwebtoken';
+import jwt from 'jsonwebtoken';
 import { UserPayload } from '../types/types';
 
 export class JwtUtil {
@@ -46,7 +46,7 @@ export class JwtUtil {
     try {
       return jwt.verify(token, this.JWT_SECRET);
     } catch (error) {
-      throw new JsonWebTokenError('jwt.invalid');
+      throw new Error('jwt.invalid');
     }
   }
 }
