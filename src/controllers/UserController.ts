@@ -2,6 +2,8 @@ import { GeneralMessageKey } from '../exception/GeneralMessageKey';
 import { UserService } from '../service/UserService';
 import { NextFunction, Request, Response } from 'express';
 import { AppError } from '../utils/AppError';
+import { UserMessageKey } from '../exception/UserMessageKey';
+import prisma from '../prisma.client';
 
 export class UserController {
   public static test(req: Request, res: Response) {
@@ -85,6 +87,28 @@ export class UserController {
       const logoutSuccessful = await UserService.logout(usernameOrEmail);
 
       res.status(200).json({ logoutSuccessful });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  public static async getUserProfile(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) {
+    try {
+      const userId = res.locals.user.userId;
+
+      const user = prisma.user.findUnique({
+        where: { id: userId },
+      });
+
+      if (!user) {
+        throw new AppError(UserMessageKey.USER_NOT_FOUND, 404);
+      }
+
+      res.status(200).json({ user });
     } catch (error) {
       next(error);
     }

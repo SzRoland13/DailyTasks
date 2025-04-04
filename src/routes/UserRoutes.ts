@@ -1,5 +1,6 @@
 import express from 'express';
 import { UserController } from '../controllers/UserController';
+import { authenticateToken } from '../middleware/JwtMiddleware';
 
 const router = express.Router();
 
@@ -14,5 +15,7 @@ router.post('/login', UserController.login);
 router.post('/register', UserController.register);
 
 router.post('/logout', UserController.logout);
+
+router.post('/profile', authenticateToken, UserController.getUserProfile);
 
 export default router;
