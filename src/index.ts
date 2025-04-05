@@ -6,12 +6,16 @@ import morgan from 'morgan';
 import prisma from './prisma.client';
 import { exit } from 'process';
 import userRoutes from './routes/UserRoutes';
+import taskRoutes from './routes/TaskRoutes';
 import { errorHandler } from './middleware/ErrorHandler';
+import { loggingMiddleware } from './middleware/LoggingMiddleware';
 
 dotenv.config();
 
 const app: Express = express();
 const PORT = process.env.PORT || 5000;
+
+app.use(loggingMiddleware);
 
 app.use(cors());
 app.use(cookieParser());
@@ -19,6 +23,7 @@ app.use(morgan('dev'));
 app.use(express.json());
 
 app.use('/api/users', userRoutes);
+app.use('/api/tasks', taskRoutes);
 
 app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
   errorHandler(err, req, res, next);

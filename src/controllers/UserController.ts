@@ -3,22 +3,23 @@ import { UserService } from '../service/UserService';
 import { NextFunction, Request, Response } from 'express';
 import { AppError } from '../utils/AppError';
 import { UserMessageKey } from '../exception/UserMessageKey';
-import prisma from '../prisma.client';
 
 export class UserController {
-  public static test(req: Request, res: Response) {
+  constructor(private userService: UserService) {}
+
+  public test(req: Request, res: Response) {
     res.send('User route works!');
   }
 
-  public static async isUsernameExist(
+  public async isUsernameExist(
     req: Request,
     res: Response,
     next: NextFunction
   ) {
     try {
-      const exists = await UserService.isUsernameExist(req.params.username);
-
-      console.log(exists);
+      const exists = await this.userService.isUsernameExist(
+        req.params.username
+      );
 
       res.status(200).json({ exists });
     } catch (error) {
@@ -26,13 +27,9 @@ export class UserController {
     }
   }
 
-  public static async isEmailExist(
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ) {
+  public async isEmailExist(req: Request, res: Response, next: NextFunction) {
     try {
-      const exists = await UserService.isEmailExist(req.params.email);
+      const exists = await this.userService.isEmailExist(req.params.email);
 
       res.status(200).json({ exists });
     } catch (error) {
@@ -40,7 +37,7 @@ export class UserController {
     }
   }
 
-  public static async login(req: Request, res: Response, next: NextFunction) {
+  public async login(req: Request, res: Response, next: NextFunction) {
     try {
       const { usernameOrEmail, password } = req.body;
 
@@ -48,7 +45,10 @@ export class UserController {
         throw new AppError(GeneralMessageKey.INVALID_CREDENTIALS, 401);
       }
 
-      const payload = await UserService.login({ usernameOrEmail, password });
+      const payload = await this.userService.login({
+        usernameOrEmail,
+        password,
+      });
 
       res.status(200).json({ payload });
     } catch (error) {
@@ -56,11 +56,7 @@ export class UserController {
     }
   }
 
-  public static async register(
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ) {
+  public async register(req: Request, res: Response, next: NextFunction) {
     try {
       const { email, username, password } = req.body;
 
@@ -68,7 +64,11 @@ export class UserController {
         throw new AppError(GeneralMessageKey.INVALID_CREDENTIALS);
       }
 
-      const user = await UserService.register({ email, username, password });
+      const user = await this.userService.register({
+        email,
+        username,
+        password,
+      });
 
       res.status(201).json({ user });
     } catch (error) {
@@ -76,7 +76,7 @@ export class UserController {
     }
   }
 
-  public static async logout(req: Request, res: Response, next: NextFunction) {
+  public async logout(req: Request, res: Response, next: NextFunction) {
     try {
       const { usernameOrEmail } = req.body;
 
@@ -84,7 +84,7 @@ export class UserController {
         throw new AppError(GeneralMessageKey.INVALID_CREDENTIALS);
       }
 
-      const logoutSuccessful = await UserService.logout(usernameOrEmail);
+      const logoutSuccessful = await this.userService.logout(usernameOrEmail);
 
       res.status(200).json({ logoutSuccessful });
     } catch (error) {
@@ -92,17 +92,11 @@ export class UserController {
     }
   }
 
-  public static async getUserProfile(
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ) {
+  public async getUserProfile(req: Request, res: Response, next: NextFunction) {
     try {
       const userId = res.locals.user.userId;
 
-      const user = prisma.user.findUnique({
-        where: { id: userId },
-      });
+      const user = await this.userService.getUserById(userId);
 
       if (!user) {
         throw new AppError(UserMessageKey.USER_NOT_FOUND, 404);

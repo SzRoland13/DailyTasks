@@ -45,8 +45,6 @@ export class JwtUtil {
 
   static validateToken(token: string) {
     try {
-      console.log(token, this.JWT_SECRET);
-
       return jwt.verify(token, this.JWT_SECRET);
     } catch (error) {
       throw new AppError(GeneralMessageKey.INVALID_JWT, 401);

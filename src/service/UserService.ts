@@ -1,20 +1,23 @@
-import { LoginRequest, LoginResponse, RegisterRequest } from '../types/types';
-import prisma from '../prisma.client';
 import bcrypt from 'bcryptjs';
 import { JwtUtil } from '../utils/JwtUtil';
 import { AppError } from '../utils/AppError';
 import { GeneralMessageKey } from '../exception/GeneralMessageKey';
 import { UserMessageKey } from '../exception/UserMessageKey';
-import { User } from '@prisma/client';
+import { PrismaClient, User } from '@prisma/client';
+import {
+  LoginRequest,
+  LoginResponse,
+  RegisterRequest,
+} from '../types/UserTypes';
 
 export class UserService {
-  public static async login(
-    loginRequest: LoginRequest
-  ): Promise<LoginResponse> {
+  constructor(private prisma: PrismaClient) {}
+
+  public async login(loginRequest: LoginRequest): Promise<LoginResponse> {
     const { usernameOrEmail, password } = loginRequest;
 
     try {
-      const user = await prisma.user.findFirst({
+      const user = await this.prisma.user.findFirst({
         where: {
           OR: [{ username: usernameOrEmail }, { email: usernameOrEmail }],
         },
@@ -34,7 +37,7 @@ export class UserService {
 
       const refreshToken = JwtUtil.generateRefreshToken(user);
 
-      await prisma.user.update({
+      await this.prisma.user.update({
         where: {
           id: user.id,
         },
@@ -45,12 +48,11 @@ export class UserService {
 
       return { accessToken, refreshToken, user };
     } catch (error) {
-      console.log(error);
       throw error;
     }
   }
 
-  public static async register(request: RegisterRequest): Promise<User> {
+  public async register(request: RegisterRequest): Promise<User> {
     const { email, username, password } = request;
 
     if (
@@ -62,7 +64,7 @@ export class UserService {
 
     const hashedPassword = await bcrypt.hash(password, 12);
 
-    return await prisma.user.create({
+    return await this.prisma.user.create({
       data: {
         email,
         username,
@@ -71,24 +73,24 @@ export class UserService {
     });
   }
 
-  public static async isUsernameExist(username: string): Promise<boolean> {
-    const user = await prisma.user.findUnique({
+  public async isUsernameExist(username: string): Promise<boolean> {
+    const user = await this.prisma.user.findUnique({
       where: { username },
     });
 
     return !!user;
   }
 
-  public static async isEmailExist(email: string): Promise<boolean> {
-    const user = await prisma.user.findUnique({
+  public async isEmailExist(email: string): Promise<boolean> {
+    const user = await this.prisma.user.findUnique({
       where: { email },
     });
 
     return !!user;
   }
 
-  public static async logout(usernameOrEmail: string): Promise<boolean> {
-    const user = await prisma.user.findFirst({
+  public async logout(usernameOrEmail: string): Promise<boolean> {
+    const user = await this.prisma.user.findFirst({
       where: {
         OR: [{ username: usernameOrEmail }, { email: usernameOrEmail }],
       },
@@ -102,7 +104,7 @@ export class UserService {
       throw new AppError(GeneralMessageKey.INVALID_CREDENTIALS);
     }
 
-    await prisma.user.update({
+    await this.prisma.user.update({
       where: { id: user.id },
       data: {
         refreshToken: null,
@@ -110,5 +112,9 @@ export class UserService {
     });
 
     return true;
+  }
+
+  public async getUserById(userId: number): Promise<User | null> {
+    return this.prisma.user.findUnique({ where: { id: userId } });
   }
 }

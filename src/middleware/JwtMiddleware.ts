@@ -1,8 +1,8 @@
 import { Request, Response, NextFunction } from 'express';
 import { JwtUtil } from '../utils/JwtUtil';
-import { UserPayload } from '../types/types';
 import { AppError } from '../utils/AppError';
 import { GeneralMessageKey } from '../exception/GeneralMessageKey';
+import { UserPayload } from '../types/UserTypes';
 
 export function authenticateToken(
   req: Request,
@@ -10,8 +10,6 @@ export function authenticateToken(
   next: NextFunction
 ) {
   const authHeader = req.headers['authorization'];
-
-  console.log(authHeader);
 
   const token = authHeader && authHeader.split(' ')[1];
 
