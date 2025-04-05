@@ -1,6 +1,8 @@
 import { User } from '@prisma/client';
 import jwt from 'jsonwebtoken';
 import { UserPayload } from '../types/types';
+import { AppError } from './AppError';
+import { GeneralMessageKey } from '../exception/GeneralMessageKey';
 
 export class JwtUtil {
   private static JWT_SECRET: string =
@@ -38,7 +40,6 @@ export class JwtUtil {
   static generateRefreshToken(user: User) {
     return jwt.sign({ userId: user.id }, this.JWT_REFRESH_TOKEN_SECRET, {
       expiresIn: this.JWT_REFRESH_TOKEN_EXPIRY,
-      algorithm: 'HS512',
     });
   }
 
@@ -46,7 +47,7 @@ export class JwtUtil {
     try {
       return jwt.verify(token, this.JWT_SECRET);
     } catch (error) {
-      throw new Error('jwt.invalid');
+      throw new AppError(GeneralMessageKey.INVALID_JWT, 401);
     }
   }
 }

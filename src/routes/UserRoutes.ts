@@ -1,18 +1,26 @@
 import express from 'express';
 import { UserController } from '../controllers/UserController';
+import { authenticateToken } from '../middleware/JwtMiddleware';
+import { UserService } from '../service/UserService';
+import prisma from '../prisma.client';
 
 const router = express.Router();
 
-router.get('/username-exists/:username', UserController.isUsernameExist);
+const userService = new UserService(prisma);
+const userController = new UserController(userService);
 
-router.get('/email-exists/:email', UserController.isEmailExist);
+router.get('/username-exists/:username', userController.isUsernameExist);
 
-router.get('/test', UserController.test);
+router.get('/email-exists/:email', userController.isEmailExist);
 
-router.post('/login', UserController.login);
+router.get('/test', userController.test);
 
-router.post('/register', UserController.register);
+router.post('/login', userController.login);
 
-router.post('/logout', UserController.logout);
+router.post('/register', userController.register);
+
+router.post('/logout', userController.logout);
+
+router.post('/profile', authenticateToken, userController.getUserProfile);
 
 export default router;

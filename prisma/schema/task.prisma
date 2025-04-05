@@ -3,8 +3,8 @@ model Task {
   title       String
   description String
   priority    PriorityLevel @default(LOW)
-  category    TaskCategory  @default(TODO)
-  author      User          @relation(fields: [authorId], references: [id])
+  status    TaskStatus  @default(TODO)
+  author      User          @relation(fields: [authorId], references: [id], onDelete: Cascade)
   authorId    Int
   createdAt   DateTime      @default(now())
   dueAt       DateTime?
@@ -16,7 +16,7 @@ enum PriorityLevel {
   HIGH
 }
 
-enum TaskCategory {
+enum TaskStatus {
   TODO
   IN_PROGRESS
   DONE
