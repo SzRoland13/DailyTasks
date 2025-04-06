@@ -1,14 +1,16 @@
-import { Request, Response, NextFunction } from 'express';
-import { TaskService } from '../service/TaskService';
-import { PriorityLevel, TaskStatus } from '@prisma/client';
+import type { Request, Response, NextFunction } from 'express';
+import type { TaskService } from '../service/TaskService';
+import type { PriorityLevel, TaskStatus } from '@prisma/client';
 
 export class TaskController {
   constructor(private taskService: TaskService) {}
 
-  public async getTaskById(req: Request, res: Response, next: NextFunction) {
+  public async getTaskById(req: Request, res: Response, next: NextFunction): Promise<void> {
     const taskId = Number(req.params.id);
+
     try {
       const task = await this.taskService.getTaskById(taskId);
+
       res.status(200).json(task);
     } catch (err) {
       next(err);
@@ -19,7 +21,7 @@ export class TaskController {
     req: Request,
     res: Response,
     next: NextFunction
-  ) {
+  ): Promise<void> {
     const userId = Number(res.locals.user?.id);
     const page = Number(req.query.page) || 1;
     const size = Number(req.query.size) || 10;
@@ -36,45 +38,52 @@ export class TaskController {
           searchIn: searchIn as 'title' | 'description',
         }
       );
+
       res.status(200).json(result);
     } catch (err) {
       next(err);
     }
   }
 
-  public async createTask(req: Request, res: Response, next: NextFunction) {
+  public async createTask(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const task = await this.taskService.createTask(req.body);
+
       res.status(201).json(task);
     } catch (err) {
       next(err);
     }
   }
 
-  public async updateTask(req: Request, res: Response, next: NextFunction) {
+  public async updateTask(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const task = await this.taskService.updateTask(req.body);
+
       res.status(200).json(task);
     } catch (err) {
       next(err);
     }
   }
 
-  public async deleteTask(req: Request, res: Response, next: NextFunction) {
+  public async deleteTask(req: Request, res: Response, next: NextFunction): Promise<void> {
     const taskId = Number(req.params.id);
+
     try {
       const task = await this.taskService.deleteTask(taskId);
+
       res.status(200).json(task);
     } catch (err) {
       next(err);
     }
   }
 
-  public async isTaskOwner(req: Request, res: Response, next: NextFunction) {
+  public async isTaskOwner(req: Request, res: Response, next: NextFunction): Promise<void> {
     const taskId = Number(req.params.taskId);
     const userId = Number(req.params.userId);
+
     try {
       const isOwner = await this.taskService.isTaskOwner(userId, taskId);
+
       res.status(200).json({ isOwner });
     } catch (err) {
       next(err);

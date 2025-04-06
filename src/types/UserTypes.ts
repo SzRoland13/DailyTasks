@@ -1,4 +1,4 @@
-import { $Enums, User } from '@prisma/client';
+import type { $Enums, User } from '@prisma/client';
 
 export type LoginRequest = {
   usernameOrEmail: string;

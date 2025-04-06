@@ -3,12 +3,8 @@ import { JwtUtil } from '../utils/JwtUtil';
 import { AppError } from '../utils/AppError';
 import { GeneralMessageKey } from '../exception/GeneralMessageKey';
 import { UserMessageKey } from '../exception/UserMessageKey';
-import { PrismaClient, User } from '@prisma/client';
-import {
-  LoginRequest,
-  LoginResponse,
-  RegisterRequest,
-} from '../types/UserTypes';
+import type { PrismaClient, User } from '@prisma/client';
+import type { LoginRequest, LoginResponse, RegisterRequest } from '../types/UserTypes';
 
 export class UserService {
   constructor(private prisma: PrismaClient) {}
@@ -55,10 +51,7 @@ export class UserService {
   public async register(request: RegisterRequest): Promise<User> {
     const { email, username, password } = request;
 
-    if (
-      (await this.isUsernameExist(username)) ||
-      (await this.isEmailExist(email))
-    ) {
+    if ((await this.isUsernameExist(username)) || (await this.isEmailExist(email))) {
       throw new AppError(GeneralMessageKey.INVALID_CREDENTIALS, 401);
     }
 

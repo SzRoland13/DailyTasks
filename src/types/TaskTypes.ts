@@ -1,4 +1,4 @@
-import { PriorityLevel, TaskStatus } from '@prisma/client';
+import type { PriorityLevel, TaskStatus } from '@prisma/client';
 
 export type TaskCreateRequest = {
   title: string;

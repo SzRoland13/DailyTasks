@@ -1,4 +1,5 @@
-import express, { Request, Response, Express, NextFunction } from 'express';
+import type { Request, Response, Express } from 'express';
+import express from 'express';
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
 import dotenv from 'dotenv';
@@ -25,19 +26,19 @@ app.use(express.json());
 app.use('/api/users', userRoutes);
 app.use('/api/tasks', taskRoutes);
 
-app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
-  errorHandler(err, req, res, next);
+app.use((err: Error, req: Request, res: Response) => {
+  errorHandler(err, req, res);
 });
 
 app.listen(PORT, async () => {
-  console.log(`Server is up and running on ${PORT} port`);
+  console.info(`Server is up and running on ${PORT} port`);
 
   try {
     await prisma.user.findUnique({
       where: { id: 1 },
     });
 
-    console.log('Database connection was made!');
+    console.info('Database connection was made!');
   } catch (error) {
     console.error('Database error: ', error);
     exit(1);

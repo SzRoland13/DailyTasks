@@ -1,11 +1,7 @@
-import { Request, Response, NextFunction } from 'express';
+import type { Request, Response, NextFunction } from 'express';
 import logger from '../utils/Logger';
 
-export function loggingMiddleware(
-  req: Request,
-  res: Response,
-  next: NextFunction
-) {
+export function loggingMiddleware(req: Request, res: Response, next: NextFunction): void {
   const start = Date.now();
 
   logger.info(`Request: ${req.method} ${req.originalUrl}`);
@@ -13,9 +9,7 @@ export function loggingMiddleware(
   res.on('finish', () => {
     const duration = Date.now() - start;
 
-    logger.info(
-      `Response: ${res.statusCode} ${req.method} ${req.originalUrl} - ${duration}ms`
-    );
+    logger.info(`Response: ${res.statusCode} ${req.method} ${req.originalUrl} - ${duration}ms`);
   });
 
   next();

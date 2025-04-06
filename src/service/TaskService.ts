@@ -1,12 +1,8 @@
-import { PrismaClient, Task } from '@prisma/client';
+import type { PrismaClient, Task } from '@prisma/client';
 import { AppError } from '../utils/AppError';
 import { TaskMessageKey } from '../exception/TaskMessageKey';
-import { PaginationRequest, PaginationResponse } from '../types/GeneralTypes';
-import {
-  TaskCreateRequest,
-  TaskFilter,
-  TaskUpdateRequest,
-} from '../types/TaskTypes';
+import type { PaginationRequest, PaginationResponse } from '../types/GeneralTypes';
+import type { TaskCreateRequest, TaskFilter, TaskUpdateRequest } from '../types/TaskTypes';
 
 export class TaskService {
   constructor(private prisma: PrismaClient) {}
