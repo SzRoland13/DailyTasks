@@ -1,12 +1,11 @@
-import { User } from '@prisma/client';
+import type { User } from '@prisma/client';
 import jwt from 'jsonwebtoken';
-import { UserPayload } from '../types/types';
+import type { UserPayload } from '../types/types';
 import { AppError } from './AppError';
 import { GeneralMessageKey } from '../exception/GeneralMessageKey';
 
 export class JwtUtil {
-  private static JWT_SECRET: string =
-    process.env.JWT_SECRET || 'abcdefghijklmnopqrstuvwxyz';
+  private static JWT_SECRET: string = process.env.JWT_SECRET || 'abcdefghijklmnopqrstuvwxyz';
 
   private static JWT_REFRESH_TOKEN_SECRET: string =
     process.env.JWT_REFRESH_SECRET || 'zyxwvutsrqponmlkjihgfedcba';
@@ -15,8 +14,7 @@ export class JwtUtil {
     ? parseInt(process.env.JWT_EXPIRES_IN)
     : 900;
 
-  private static JWT_REFRESH_TOKEN_EXPIRY: number = process.env
-    .JWT_REFRESH_EXPIRES_IN
+  private static JWT_REFRESH_TOKEN_EXPIRY: number = process.env.JWT_REFRESH_EXPIRES_IN
     ? parseInt(process.env.JWT_REFRESH_EXPIRES_IN)
     : 604800;
 

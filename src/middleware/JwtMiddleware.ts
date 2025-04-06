@@ -1,14 +1,10 @@
-import { Request, Response, NextFunction } from 'express';
+import type { Request, Response, NextFunction } from 'express';
 import { JwtUtil } from '../utils/JwtUtil';
 import { AppError } from '../utils/AppError';
 import { GeneralMessageKey } from '../exception/GeneralMessageKey';
-import { UserPayload } from '../types/UserTypes';
+import type { UserPayload } from '../types/UserTypes';
 
-export function authenticateToken(
-  req: Request,
-  res: Response,
-  next: NextFunction
-) {
+export function authenticateToken(req: Request, res: Response, next: NextFunction): void {
   const authHeader = req.headers['authorization'];
 
   const token = authHeader && authHeader.split(' ')[1];

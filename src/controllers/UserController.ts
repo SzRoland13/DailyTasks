@@ -1,25 +1,19 @@
 import { GeneralMessageKey } from '../exception/GeneralMessageKey';
-import { UserService } from '../service/UserService';
-import { NextFunction, Request, Response } from 'express';
+import type { UserService } from '../service/UserService';
+import type { NextFunction, Request, Response } from 'express';
 import { AppError } from '../utils/AppError';
 import { UserMessageKey } from '../exception/UserMessageKey';
 
 export class UserController {
   constructor(private userService: UserService) {}
 
-  public test(req: Request, res: Response) {
+  public test(req: Request, res: Response): void {
     res.send('User route works!');
   }
 
-  public async isUsernameExist(
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ) {
+  public async isUsernameExist(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      const exists = await this.userService.isUsernameExist(
-        req.params.username
-      );
+      const exists = await this.userService.isUsernameExist(req.params.username);
 
       res.status(200).json({ exists });
     } catch (error) {
@@ -27,7 +21,7 @@ export class UserController {
     }
   }
 
-  public async isEmailExist(req: Request, res: Response, next: NextFunction) {
+  public async isEmailExist(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const exists = await this.userService.isEmailExist(req.params.email);
 
@@ -37,7 +31,7 @@ export class UserController {
     }
   }
 
-  public async login(req: Request, res: Response, next: NextFunction) {
+  public async login(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const { usernameOrEmail, password } = req.body;
 
@@ -56,7 +50,7 @@ export class UserController {
     }
   }
 
-  public async register(req: Request, res: Response, next: NextFunction) {
+  public async register(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const { email, username, password } = req.body;
 
@@ -76,7 +70,7 @@ export class UserController {
     }
   }
 
-  public async logout(req: Request, res: Response, next: NextFunction) {
+  public async logout(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const { usernameOrEmail } = req.body;
 
@@ -92,7 +86,7 @@ export class UserController {
     }
   }
 
-  public async getUserProfile(req: Request, res: Response, next: NextFunction) {
+  public async getUserProfile(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const userId = res.locals.user.userId;
 
